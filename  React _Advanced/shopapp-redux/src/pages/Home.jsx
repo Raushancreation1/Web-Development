@@ -1,9 +1,55 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import Product from "../components/Product";
+import Spinner from "../components/Spinner";
 
 const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+  const API_URL = "https://fakestoreapi.com/products";
+  const [loading, setLoding] = useState(false);
+  const [posts, setPosts] = useState([]);
 
-export default Home
+  async function fetchProductData() {
+    setLoding(true);
+
+    try{
+      const res = await fetch(API_URL);
+      const data = await res.json();
+
+      setPosts(data);
+
+    }
+    catch(error){
+      console.log("Error hai")
+      setPosts([]);
+
+    }
+
+    setLoding(false)
+  }
+
+  useEffect( () => {
+    fetchProductData();
+  }, [])
+
+  return(
+    <div>
+
+      {
+        loading ? <Spinner/> :
+        posts.length > 0 ? 
+        (<div>
+          {
+            posts.map( (post) => (
+              <Product key = {post.id} post={post}/>
+            ))
+          }
+          </div>) :
+          <div>
+            <p>No Data Found</p>
+          </div>
+      }
+      
+    </div>
+  )
+};
+
+export default Home;
